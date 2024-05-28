@@ -319,9 +319,6 @@ df = pd.read_csv('prospects.csv')
 # Fix column names. Replace underscore with space, lowercase column names, and capitalize first words
 df.columns = df.columns.str.replace('_', ' ').str.lower().str.title()
 
-with st.sidebar:
-    openai_key = st.text_input(label="Your OpenAI API key", help="Your API key is not stored anywhere")
-    llm_model = st.selectbox(label="Choose a model", options=["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4", "gpt-4o"])
 
 # create sidebar filters
 st.sidebar.write('**Use filters to select prospects** 👇')
@@ -332,19 +329,13 @@ dynamic_filters.display_filters(location='sidebar')
 df_filtered = dynamic_filters.filter_df()
 
 
-with st.sidebar:
-    st.markdown('''The dataset is taken from [Kaggle](https://www.kaggle.com/datasets/aramacus/usa-public-companies) and slightly modified for the purpose of this app.
-    ''', unsafe_allow_html=True)
-    st.markdown('''[GitHub Repo](https://github.com/arsentievalex/instant-insight-web-app)''', unsafe_allow_html=True)
-    st.markdown('''The app created by [Oleksandr Arsentiev](https://twitter.com/alexarsentiev) for the purpose of
-    Streamlit Summit Hackathon''', unsafe_allow_html=True)
 
 ##############################################################################################################
 
-st.title('Welcome to sTP!⚡')
+st.title('SmarTestPrep - Обзор Результатов по Проф Ориентации⚡')
 
 with st.expander('What is this app about?'):
-    st.write('hello')
+    st.write('Добро пожаловать в SmarTestPrep! Здесь вы можете отслеживать и анализировать результаты тестов ваших учеников, выявлять сильные и слабые стороны, а также получать персонализированные рекомендации для улучшения их успеваемости.')
 
 num_of_cust = df_filtered.shape[0]
 st.metric(label='Number of Prospects', value=num_of_cust)
