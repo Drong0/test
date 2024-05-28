@@ -386,7 +386,7 @@ df_fixed = pd.DataFrame({
 
 # Chart 1: Number of students per class
 st.subheader("Number of Students per Class")
-fig_class_distribution = px.bar(df_fixed, x='Class', y='Number of Students', title="Number of Students per Class", template='simple_white')
+fig_class_distribution = px.bar(df_fixed, x='Класс', y='Число студентов', title="Число студентов по классам", template='simple_white')
 st.plotly_chart(fig_class_distribution)
 
 # Chart 2: Distribution of Roles
