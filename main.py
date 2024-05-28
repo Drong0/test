@@ -321,7 +321,7 @@ df.columns = df.columns.str.replace('_', ' ').str.lower().str.title()
 
 
 # create sidebar filters
-st.sidebar.write('**Use filters to select prospects** 👇')
+st.sidebar.write('**Поиск** 👇')
 
 # display dynamic multi select filters
 dynamic_filters = DynamicFilters(df, filters=['Дата', 'Name', 'Почта', 'Школа', 'Класс','Результат'])
@@ -338,7 +338,7 @@ with st.expander('What is this app about?'):
     st.write('Добро пожаловать в SmarTestPrep! Здесь вы можете отслеживать и анализировать результаты тестов ваших учеников, выявлять сильные и слабые стороны, а также получать персонализированные рекомендации для улучшения их успеваемости.')
 
 num_of_cust = df_filtered.shape[0]
-st.metric(label='Number of Prospects', value=num_of_cust)
+st.metric(label='Количество', value=num_of_cust)
 
 # button to create slides
 ui_container = st.container()
@@ -388,8 +388,8 @@ df_fixed = pd.DataFrame({
 })
 
 # Chart 1: Number of students per class
-st.subheader("Number of Students per Class")
-fig_class_distribution = px.bar(df_fixed, x='Class', y='Number of Students', title="Number of Students per Class", template='simple_white')
+st.subheader("Число студентов по классам")
+fig_class_distribution = px.bar(df_fixed, x='Class', y='Number of Students', title="Число студентов по классам", template='simple_white')
 st.plotly_chart(fig_class_distribution)
 
 # Chart 2: Distribution of Roles
