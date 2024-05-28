@@ -324,7 +324,7 @@ df.columns = df.columns.str.replace('_', ' ').str.lower().str.title()
 st.sidebar.write('**Поиск** 👇')
 
 # display dynamic multi select filters
-dynamic_filters = DynamicFilters(df, filters=['Дата', 'Name', 'Почта', 'Школа', 'Класс','Результат'])
+dynamic_filters = DynamicFilters(df, filters=['Дата', 'Имя', 'Почта', 'Школа', 'Класс','Результат'])
 dynamic_filters.display_filters(location='sidebar')
 df_filtered = dynamic_filters.filter_df()
 
@@ -346,13 +346,13 @@ ui_container = st.container()
 #     submit = st.button(label='Generate Presentation')
 
 # select columns to show
-df_filtered = df_filtered[['Дата', 'Name', 'Почта', 'Школа', 'Класс','Результат']]
+df_filtered = df_filtered[['Дата', 'Имя', 'Почта', 'Школа', 'Класс','Результат']]
 
 # creating AgGrid dynamic table and setting configurations
 gb = GridOptionsBuilder.from_dataframe(df_filtered)
 gb.configure_selection(selection_mode="single", use_checkbox=True)
 gb.configure_column(field='Дата', width=270)
-gb.configure_column(field='Name', width=260)
+gb.configure_column(field='Имя', width=260)
 gb.configure_column(field='Почта', width=350)
 gb.configure_column(field='Школа', width=270)
 gb.configure_column(field='Класс', width=240)
