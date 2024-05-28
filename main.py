@@ -334,7 +334,7 @@ df_filtered = dynamic_filters.filter_df()
 
 st.title('SmarTestPrep - Обзор Результатов по Проф Ориентации⚡')
 
-with st.expander('What is this app about?'):
+with st.expander('Обзор'):
     st.write('Добро пожаловать в SmarTestPrep! Здесь вы можете отслеживать и анализировать результаты тестов ваших учеников, выявлять сильные и слабые стороны, а также получать персонализированные рекомендации для улучшения их успеваемости.')
 
 num_of_cust = df_filtered.shape[0]
