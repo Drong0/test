@@ -374,6 +374,9 @@ response = AgGrid(
 
 
 
+
+
+
 # Create data
 classes = ['9A', '9B', '9C', '10A', '10B', '10C', '11A', '11B', '11C']
 number_of_students = [10, 11, 15, 16, 18, 23, 22, 24, 28]
@@ -386,7 +389,7 @@ df_fixed = pd.DataFrame({
 
 # Chart 1: Number of students per class
 st.subheader("Number of Students per Class")
-fig_class_distribution = px.bar(df_fixed, x='Класс', y='Число студентов', title="Число студентов по классам", template='simple_white')
+fig_class_distribution = px.bar(df_fixed, x='Class', y='Number of Students', title="Number of Students per Class", template='simple_white')
 st.plotly_chart(fig_class_distribution)
 
 # Chart 2: Distribution of Roles
