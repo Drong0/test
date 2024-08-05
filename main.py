@@ -1,16 +1,12 @@
 import pandas as pd
-#import snowflake.connector
 import streamlit as st
 from streamlit_dynamic_filters import DynamicFilters
 from st_aggrid import AgGrid
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 from st_aggrid import GridUpdateMode, DataReturnMode
 import warnings
-from yahooquery import Ticker
 import plotly.express as px
 import plotly.graph_objects as go
-from pptx import Presentation
-from pptx.util import Inches
 from datetime import date
 from PIL import Image
 import requests
@@ -104,14 +100,15 @@ def plot_graph(df, x, y, title, name):
 
 
 def peers_plot(df, name, metric):
-    """function to plot a bar chart with peers. Takes DataFrame, name, metric and ticker as arguments and returns a Plotly figure"""
+    """function to plot a bar chart with peers. Takes DataFrame, name, metric and ticker as arguments and returns a 
+    Plotly figure """
 
     # drop rows with missing metrics
     df.dropna(subset=[metric], inplace=True)
 
     df_sorted = df.sort_values(metric, ascending=False)
 
-    # iterate over the labels and add the colors to the color mapping dictionary, hightlight the selected ticker
+    # iterate over the labels and add the colors to the color mapping dictionary, highlight the selected ticker
     color_map = {}
     for label in df_sorted['Company Name']:
         if label == name:
@@ -314,21 +311,41 @@ def no_data_plot():
 
 #conn = st.connection("snowflake")
 #df = conn.query("SELECT * from prospects LIMIT 1000,", ttl=600)
-df = pd.read_csv('prospects.csv')
+api_url = "https://api.smartestprep.com/api/directory/api/prof-results/?limit=1000"  # Replace with your actual API URL
+
+# Fetch data from API
+def fetch_data_from_api(api_url):
+    """Function to fetch data from an API and return it as a DataFrame"""
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        data = response.json()
+        return pd.DataFrame(data['results'])
+    else:
+        st.error("Failed to fetch data from the API")
+        return pd.DataFrame()
+
+df = fetch_data_from_api(api_url)
+
+# Ensure the timestamp column exists and format it
+# if 'Timestamp' in df.columns:
+#     df['Timestamp'] = pd.to_datetime(df['Timestamp']).dt.strftime('%Y-%m-%d %H:%M:%S')
+# else:
+#     st.error("The 'timestamp' column is missing from the API response.")
 
 # Fix column names. Replace underscore with space, lowercase column names, and capitalize first words
 df.columns = df.columns.str.replace('_', ' ').str.lower().str.title()
 
-
-# create sidebar filters
+# Create sidebar filters
 st.sidebar.write('**Поиск** 👇')
 
-# display dynamic multi select filters
-dynamic_filters = DynamicFilters(df, filters=['Дата', 'Имя', 'Почта', 'Школа', 'Класс','Результат'])
+for col in df.columns:
+    if isinstance(df[col].iloc[0], list):
+        df[col] = df[col].apply(lambda x: ', '.join(x) if isinstance(x, list) else x)
+
+# Display dynamic multi select filters
+dynamic_filters = DynamicFilters(df, filters=['Timestamp', 'Name', 'Surname', 'Email', 'Professions'])
 dynamic_filters.display_filters(location='sidebar')
 df_filtered = dynamic_filters.filter_df()
-
-
 
 ##############################################################################################################
 
@@ -340,23 +357,22 @@ with st.expander('Обзор'):
 num_of_cust = df_filtered.shape[0]
 st.metric(label='Количество', value=num_of_cust)
 
-# button to create slides
+# Button to create slides
 ui_container = st.container()
 # with ui_container:
 #     submit = st.button(label='Generate Presentation')
 
-# select columns to show
-df_filtered = df_filtered[['Дата', 'Имя', 'Почта', 'Школа', 'Класс','Результат']]
+# Select columns to show
+df_filtered = df_filtered[['Timestamp', 'Name', 'Surname', 'Email', 'Professions']]
 
-# creating AgGrid dynamic table and setting configurations
+# Creating AgGrid dynamic table and setting configurations
 gb = GridOptionsBuilder.from_dataframe(df_filtered)
 gb.configure_selection(selection_mode="single", use_checkbox=True)
-gb.configure_column(field='Дата', width=270)
-gb.configure_column(field='Имя', width=260)
-gb.configure_column(field='Почта', width=350)
-gb.configure_column(field='Школа', width=270)
-gb.configure_column(field='Класс', width=240)
-gb.configure_column(field='Результат', width=240)
+gb.configure_column(field='Timestamp', width=270)
+gb.configure_column(field='Name', width=260)
+gb.configure_column(field='Surname', width=350)
+gb.configure_column(field='Email', width=270)
+gb.configure_column(field='Professions', width=240)
 
 gridOptions = gb.build()
 
@@ -371,11 +387,6 @@ response = AgGrid(
     theme='alpine',
     allow_unsafe_jscode=True
 )
-
-
-
-
-
 
 # Create data
 classes = ['9A', '9B', '9C', '10A', '10B', '10C', '11A', '11B', '11C']
@@ -392,9 +403,3 @@ st.subheader("Число студентов по классам")
 fig_class_distribution = px.bar(df_fixed, x='Class', y='Number of Students', title="Число студентов по классам", template='simple_white')
 st.plotly_chart(fig_class_distribution)
 
-# Chart 2: Distribution of Roles
-st.subheader("Распределение профессии")
-roles_distribution = df_filtered['Результат'].value_counts().reset_index()
-roles_distribution.columns = ['Role', 'Count']
-fig_roles_distribution = px.pie(roles_distribution, values='Count', names='Role', title="Распределение профессии", template='simple_white')
-st.plotly_chart(fig_roles_distribution)
